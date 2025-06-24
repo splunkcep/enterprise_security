@@ -503,6 +503,10 @@ time.sleep(3) # Envía registros cada 3 segundos
 Archivo: /var/log/splunk_real_env/generate_carbon_black_edr_logs.py
 
 ```python
+sudo vi /var/log/splunk_real_env/generate_carbon_black_edr_logs.py
+```
+
+```python
 import time
 import random
 
@@ -554,30 +558,30 @@ sudo nohup python3 /var/log/splunk_real_env/generate_carbon_black_edr_logs.py > 
 
 4. Asignar índices en ES (macros.conf)
 
-Ahora necesitamos configurar Splunk Enterprise Security (ES) para que reconozca los registros en el CIM (Modelo de Información Común).
+Ahora necesitamos configurar Splunk Enterprise Security (ES) para que reconozca los registros en el CIM (Common Information Model).
 
 Archivo: /opt/splunk/etc/apps/SplunkEnterpriseSecuritySuite/local/macros.conf
 
 Cisco ASA (Tráfico de red)
 
 ```python
-[Índices de tráfico de red]
-definición = (índice=red O índice=principal)
+[Network_Traffic_Indexes]
+definition = (index=network OR index=main)
 iseval = 0
 ```
 
-EDR de carbono negro (Punto final)
+EDR de Carbon Black (Punto final)
 
 ```python
-[Índices de punto final]
-definición = (índice=edr O índice=principal)
+[Endpoint_Indexes]
+definition = (index=edr OR index=main)
 iseval = 0
 ```
 
 Después de editar, aplique los cambios:
 
 ```python
-splunk /opt/splunk/bin/splunk restart
+/opt/splunk/bin/splunk restart
 ```
 
 5. Pruebe los registros en Splunk
@@ -610,7 +614,7 @@ Resumen final
 Acceda al directorio donde descargó el archivo. Por ejemplo:
 
 ```python
-cd /Users/Levi/Downloads/splunk-enterprise-security_802.spl
+cd /Users/Username/Downloads/splunk-enterprise-security_802.spl
 ```
 
 Abra la terminal y realice la transferencia:
