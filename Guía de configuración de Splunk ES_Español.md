@@ -382,10 +382,20 @@ ls /opt/splunk/etc/apps/Splunk_TA_cisco-asa/
 Si no hay ninguna carpeta, créela:
 
 ```python
+cd /opt/splunk/etc/apps/
+```
+```python
+mkdir /opt/splunk/etc/apps/Splunk_TA_cisco-asa/
+```
+```python
 mkdir /opt/splunk/etc/apps/Splunk_TA_cisco-asa/local
 ```
 
 Archivo: /opt/splunk/etc/apps/Splunk_TA_cisco-asa/local/inputs.conf
+
+```python
+touch /opt/splunk/etc/apps/Splunk_TA_cisco-asa/local/inputs.conf
+```
 
 ```python
 vi /opt/splunk/etc/apps/Splunk_TA_cisco-asa/local/inputs.conf
@@ -401,9 +411,9 @@ Pegar la estrofa Abajo:
 
 ```python
 [monitor:///var/log/splunk_real_env/cisco_firewall.log]
-índice = red
-tipo de origen = cisco:asa
-deshabilitado = falso
+index = network
+sourcetype = cisco:asa
+disabled = false
 ```
 
 ```python
@@ -417,9 +427,17 @@ Archivo: /opt/splunk/etc/apps/Splunk_TA_carbonblack/local/inputs.conf
 Si no tiene una, cree la carpeta:
 
 ```python
+cd /opt/splunk/etc/apps/
+```
+```python
+mkdir /opt/splunk/etc/apps/Splunk_TA_carbonblack/local/
+```
+```python
+touch /opt/splunk/etc/apps/Splunk_TA_carbonblack/local/inputs.conf
+```
+```python
 vi /opt/splunk/etc/apps/Splunk_TA_carbonblack/local/inputs.conf
 ```
-
 ```python
 [monitor:///var/log/splunk_real_env/carbon_black_edr.log]
 index = edr
@@ -437,6 +455,9 @@ Reinicie Splunk para aplicar los cambios:
 
 Crear una carpeta local:
 
+```python
+cd /var/log/
+```
 ```python
 sudo mkdir /var/log/splunk_real_env/
 ```
