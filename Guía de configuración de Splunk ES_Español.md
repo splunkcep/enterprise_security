@@ -364,7 +364,7 @@ Crear índice para los registros EDR de Carbon Black
 🚀 Reinicia Splunk para aplicar los cambios:
 
 ```python
-splunk /opt/splunk/bin/splunk restart
+/opt/splunk/bin/splunk restart
 ```
 
 2. Crea las estrofas de entrada (inputs.conf)
