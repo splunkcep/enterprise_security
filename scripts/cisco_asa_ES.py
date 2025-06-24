@@ -15,36 +15,36 @@ ACCIONES = ["Denegar", "Permitir", "Desmontar", "Construido"]
 PROTOCOLOS = ["tcp", "udp", "icmp"]
 NIVELES_DE_REGISTRO = ["%ASA-4", "%ASA-5", "%ASA-6", "%ASA-3"]
 
-# Función para generar un registro aleatorio
+# Función para generar un log aleatorio
 def generate_log():
-timestamp = datetime.now().strftime("%b %d %Y %H:%M:%S")
-nivel_de_registro = random.choice(NIVELES_DE_REGISTRO)
-acción = random.choice(ACCIONES)
-ip_origen = random.choice(IPS)
-puerto_origen = random.randint(1000, 65000)
-ip_destino = random.choice(IP_DESTINADO)
-puerto_destino = random.randint(20, 8080)
-usuario = aleatorio.elección(USUARIOS)
-protocolo = aleatorio.elección(PROTOCOLOS)
+    timestamp = datetime.now().strftime("%b %d %Y %H:%M:%S")
+    log_level = random.choice(LOG_LEVELS)
+    action = random.choice(ACTIONS)
+    src_ip = random.choice(IPS)
+    src_port = random.randint(1000, 65000)
+    dst_ip = random.choice(DEST_IPS)
+    dst_port = random.randint(20, 8080)
+    user = random.choice(USERS)
+    protocol = random.choice(PROTOCOLS)
 
-# Formato del registro
-entrada_registro = f"{marca_de_tiempo}: {nivel_registro}-106100: lista_de_acceso acl_in {acción} {protocolo} dentro/{ip_origen}({puerto_origen}) -> fuera/{ip_dst}({puerto_dst}) por usuario {usuario}"
+    # Formato del log
+    log_entry = f"{timestamp}: {log_level}-106100: access-list acl_in {action} {protocol} inside/{src_ip}({src_port}) -> outside/{dst_ip}({dst_port}) by user {user}"
+    
+    return log_entry
 
-devuelve entrada_registro
+  # Función principal
+  def main():
+    print("⏳ Generando logs de Cisco ASA cada 5 segundos...")
+    
+    while True:
+        log = generate_log()
+        print(log)
 
-# Función principal
-def main():
-print("⏳ Generando registros de Cisco ASA cada 5 segundos...")
+        # Escritura en archivo
+        with open(LOG_FILE, "a") as file:
+        file.write(log + "\n")
 
-whileTrue:
-registro = generate_log()
-print(registro)
+        time.sleep(5)
 
-# Escritura en archivo
-with open(ARCHIVO_REGISTRO, "a") as file:
-file.write(registro + "\n")
-
-time.sleep(5)
-
-if _name_ == "_main_":
-main()
+    if _name_ == "_main_":
+    main()
