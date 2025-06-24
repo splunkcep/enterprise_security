@@ -1,6 +1,6 @@
-# Regras de Firewall
+# Reglas de Firewall
 
- 1. Adicionando regras de firewall
+1. Agregar reglas de firewall
 
 ```python
 sudo iptables -I INPUT -p tcp --dport 8000 -j ACCEPT
@@ -22,19 +22,19 @@ sudo iptables -I INPUT -p tcp --dport 8088 -j ACCEPT
 sudo iptables -I INPUT -p tcp --dport 9997 -j ACCEPT
 ```
 
-Integração de Logs do Cisco ASA e Carbon Black EDR no Splunk ES 8
+Integración de registros de Cisco ASA y Carbon Black EDR en Splunk ES 8
 
-2. Salvar as regras para persistência após reboot
+2. Guardar reglas para la persistencia tras el reinicio
 
-Para sistemas baseados em Debian/Ubuntu:
+Para sistemas basados ​​en Debian/Ubuntu:
 
 ```python
 sudo iptables-save | sudo tee /etc/iptables.rules
 ```
 
-3. Aplicar as regras após reinicialização
+3. Aplicar las reglas tras el reinicio
 
-Para garantir que as regras sejam aplicadas no boot:
+Para garantizar que las reglas se apliquen al arrancar:
 
 ```python
 sudo bash -c "echo -e '#!/bin/sh\n/sbin/iptables-restore < /etc/iptables.rules' > /etc/network/if-pre-up.d/iptables"
@@ -44,204 +44,206 @@ sudo bash -c "echo -e '#!/bin/sh\n/sbin/iptables-restore < /etc/iptables.rules' 
 sudo chmod +x /etc/network/if-pre-up.d/iptables
 ```
 
-4. Verificar se as regras foram aplicadas
+4. Verificar que las reglas se hayan aplicado
 
 ```python
 sudo iptables -L -n
 ```
 
-Isso listará todas as regras configuradas no iptables, incluindo as portas recém-adicionadas.
+Esto mostrará todas las reglas configuradas en iptables, incluidos los puertos recién añadidos.
 
-# Desativando Transparent Huge Pages (THP) antes de instalar o Splunk Enterprise Trial
+Desactivación de las Páginas Grandes Transparentes (THP) antes de instalar la versión de prueba de Splunk Enterprise
 
-O Transparent Huge Pages (THP) pode impactar negativamente o desempenho do Splunk. Portanto, a Splunk recomenda que essa configuração seja desativada antes da instalação.
+Las Páginas Grandes Transparentes (THP) pueden afectar negativamente el rendimiento de Splunk. Por lo tanto, Splunk recomienda desactivar esta opción antes de la instalación.
 
-Verificar o status atual do THP
 
-Antes de fazer qualquer alteração, verifique se o THP está ativado no sistema:
+Comprobar el estado actual de THP
+
+Antes de realizar cualquier cambio, asegúrese de que THP esté habilitado en su sistema:
 
 ```python
 cat /sys/kernel/mm/transparent_hugepage/enabled
 ```
 
-Se a saída indicar [always] ou [madvise], significa que o THP está ativado e precisa ser desativado.
+Si el resultado indica [always] o [madvise], THP está habilitado y debe deshabilitarse.
 
-Editar o arquivo de configuração do GRUB
+Editar el archivo de configuración de GRUB
 
-Abra o arquivo de configuração do GRUB com o editor vi (ou outro de sua preferência):
+Abra el archivo de configuración de GRUB con vi (u otro editor de su elección):
 
 ```python
 sudo vi /etc/default/grub
 ```
 
-Localize a linha que começa com GRUB_CMDLINE_LINUX e adicione transparent_hugepage=never no final da linha, dentro das aspas.
+Busque la línea que comienza con GRUB_CMDLINE_LINUX y agregue transparent_hugepage=never al final de la línea, entre comillas.
 
-Exemplo:
+Ejemplo:
 
 ```python
 GRUB_CMDLINE_LINUX="rhgb quiet transparent_hugepage=never"
 ```
 
-Salve e saia do editor (ESC → :wq → Enter).
+Guarde y salga del editor (ESC → :wq → Enter).
 
-Atualizar o GRUB
 
-Após editar o arquivo, gere uma nova configuração do GRUB com o seguinte comando:
+Actualización de GRUB
+
+Tras editar el archivo, genere una nueva configuración de GRUB con el siguiente comando:
 
 ```python
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 ```
 
-Reiniciar o sistema
+Reinicie el sistema
 
-Agora, reinicie o servidor para aplicar as alterações:
+Ahora, reinicie el servidor para aplicar los cambios:
 
 ```python
 sudo reboot
 ```
 
-Verificar se o THP foi desativado
+Verifique que THP esté deshabilitado
 
-Após o reboot, confirme se o THP está desativado:
+Tras reiniciar, confirme que THP esté deshabilitado:
 
 ```python
 cat /sys/kernel/mm/transparent_hugepage/enabled
 ```
 
-A saída deve mostrar ”[never]”, indicando que o THP foi desativado com sucesso.
+El resultado debería mostrar "[never]", lo que indica que THP se ha deshabilitado correctamente.
 
-🔗 Documentação Oficial
+🔗 Documentación oficial
 
-Para mais informações, consulte a documentação oficial da Splunk:
-🔗 Splunk and THP - Transparent Huge Pages
+Para más información, consulta la documentación oficial de Splunk:
+🔗 Splunk y THP - Páginas enormes transparentes
 
-# 📌 Passo a Passo: Instalação do Splunk Enterprise Trial no Linux
+# 📌 Paso a paso: Instalación de la versión de prueba de Splunk Enterprise en Linux
 
-🔹 Acessando o Servidor via SSH
+🔹 Acceso al servidor por SSH
 
-Abra um terminal e conecte-se ao servidor via SSH:
+Abre una terminal y conéctate al servidor por SSH:
 
-`ssh Nome_Do_Usuario@<IP_DO_SERVIDOR>`
+`ssh User_Name@<SERVER_IP>`
 
-🔹 Substitua:
-	•	Nome_Do_Usuario pelo usuário do sistema operacional ou domínio.
-	•	<IP_DO_SERVIDOR> pelo IP real do host onde deseja instalar o Splunk.
+🔹 Reemplaza:
+• User_Name con el sistema operativo o usuario del dominio.
+• <SERVER_IP> con la IP real del host donde quieres instalar Splunk.
 
-🔹 Criando um Usuário para o Splunk
+🔹 Creación de un usuario para Splunk
 
-Para garantir uma instalação segura, criaremos um usuário dedicado para rodar o Splunk:
+Para garantizar una instalación segura, crearemos un usuario dedicado para ejecutar Splunk:
 
-🔹 Esse comando:
-	•	Cria um usuário chamado splunkuser.
+🔹 Este comando:
+• Crea un usuario llamado splunkuser.
 
 ```python
 sudo useradd -m -r splunkuser
 ```
 
-🔹 Esse comando:
-	•	Solicita a definição de uma senha para ele.
+🔹 Este comando:
+• Te pide que le asignes una contraseña.
 
 ```python
 sudo passwd splunkuser
 ```
 
-🔑 *Credenciais:
-	•	Usuário do SO: splunkuser
-	•	Senha do SO: Definida no comando acima*
+🔑 *Credenciales:
+• Usuario del SO: splunkuser
+• Contraseña del SO: Establecida en el comando anterior*
 
- 🔹 Adicionando o Usuário Splunk ao Grupo Sudo
+🔹 Añadir el usuario de Splunk al grupo Sudo
 
-1️Adicione o splunkuser ao grupo sudo:
+1️ Añadir splunkuser al grupo Sudo:
 
 ```python
 sudo usermod -aG sudo splunkuser
 ```
 
-Verifique se a adição foi bem-sucedida:
+Verificar que la adición se haya realizado correctamente:
 
 ```python
 groups splunkuser
 ```
 
-Para mudar para o bash, execute:
+Para cambiar a bash, ejecute:
 
 ```python
 sudo chsh -s /bin/bash splunkuser
 ```
 
-Aplique as mudanças saindo e entrando novamente como splunkuser:
+Aplique los cambios cerrando sesión y volviendo a iniciarla como splunkuser:
 
 ```python
 su - splunkuser
 ```
 
-Onde Estou?
+¿Dónde estoy?
 
 ```python
 pwd
 ```
 
-Quem eu sou?
+¿Quién soy?
 
 ```python
 whoami
 ```
 
-O que tenho?
+¿Qué tengo?
 
 ```python
 ls
 ```
 
-Quais as permissões associadas ao que tenho?
+¿Qué permisos tengo?
 
 ```python
 ls -lha
 ```
 
-🔹 Baixando o Instalador do Splunk
+🔹 Descarga del instalador de Splunk
 
-🔹 Esse comando:
-	•	Faz o download do Splunk Enterprise versão 9.4.1.
-	•	Se quiser outra versão, ajuste o link no wget.
+🔹 Este comando:
+• Descarga la versión 9.4.1 de Splunk Enterprise.
+• Si desea otra versión, ajuste el enlace en wget.
 
 ```python
 sudo wget -O splunk-9.4.1-e3bdab203ac8-linux-amd64.tgz "https://download.splunk.com/products/splunk/releases/9.4.1/linux/splunk-9.4.1-e3bdab203ac8-linux-amd64.tgz"
 ```
 
-Agora, vá para o diretório de downloads:
+Ahora, vaya al directorio de descargas:
 
 ```python
 cd /home/splunkuser/
 ```
 
-🔹 Ajustando Permissões no Arquivo de Instalação
+🔹 Ajuste de permisos en el archivo de instalación
 
-Antes de instalar, confira as permissões do arquivo:
+Antes de instalar, verifique los permisos del archivo:
 
 ```python
 ls -lha /home/splunkuser
 ```
 
-Dê permissão de execução ao arquivo:
+Asigne permisos de ejecución al archivo:
 
 ```python
 sudo chmod +x /home/splunkuser/splunk-9.4.1-e3bdab203ac8-linux-amd64.tgz
 ```
 
-Verifique novamente as permissões:
+Verifique los permisos de nuevo:
 
 ```python
 ls -lha /home/splunkuser
 ```
 
-🔹 Criando o Diretório de Instalação do Splunk
+🔹 Creación del directorio de instalación de Splunk
 
 ```python
 sudo mkdir /opt/splunk
 ```
 
-Agora, altere o dono da pasta para o usuário splunkuser:
+Ahora, cambie el propietario de la carpeta al usuario splunkuser:
 
 sudo chown -R splunkuser:splunkuser /opt/splunk
 
@@ -249,53 +251,53 @@ sudo chown -R splunkuser:splunkuser /opt/splunk
 sudo chown -R splunkuser:splunkuser /opt/splunk
 ```
 
-Verifique se as permissões estão corretas:
+Verifique que los permisos sean correctos:
 
 ```python
 ls -lha /opt/splunk
 ```
 
-🔹 Instalando o Splunk
+🔹 Instalación de Splunk
 
-Extraia o arquivo baixado para /opt
-(📌 Isso instalará o Splunk na pasta /opt/splunk.):
+Extracción El archivo descargado en /opt
+(📌 Esto instalará Splunk en la carpeta /opt/splunk):
 
 ```python
 tar -xzvf splunk-9.4.1-e3bdab203ac8-linux-amd64.tgz -C /opt
 ```
 
-🔹 Iniciando o Splunk
+🔹 Iniciar Splunk
 
-Agora, inicie o Splunk e aceite a licença:
+Ahora, inicie Splunk y acepte la licencia:
 
 ```python
 /opt/splunk/bin/splunk start --accept-license
 ```
 
 🔑
-* Credenciais Padrão do Splunk:
-*	Usuário do SO: splunkuser
-*	Senha do SO: (definida anteriormente)
-*	Usuário do Splunk: admin
-*	Senha do Splunk: splunkuser
+* Credenciales predeterminadas de Splunk:
+* Usuario del SO: splunkuser
+* Contraseña del SO: (establecida anteriormente)
+* Usuario de Splunk: admin
+* Contraseña de Splunk: splunkuser
 
-🔹 Configurando o Splunk para Iniciar Automaticamente
+🔹 Configurar Splunk para que se inicie automáticamente
 
-Para garantir que o Splunk inicie automaticamente ao reiniciar o servidor:
+Para garantizar que Splunk se ejecute automáticamente, se inicia automáticamente cuando el servidor Reinicios:
 
 ```python
 sudo /opt/splunk/bin/splunk enable boot-start -user splunkuser --accept-license --answer-yes --no-prompt
 ```
 
-Isso configura o serviço do Splunk para iniciar automaticamente com o sistema.
+Esto configura el servicio Splunk para que se inicie automáticamente al iniciar el sistema.
 
-Verifique o arquivo de inicialização:
+Verifique el archivo de inicio:
 
 ```python
 sudo vi /etc/init.d/splunk
 ```
 
-Adicione as seguintes linhas (se necessário):
+Agregue las siguientes líneas (si es necesario):
 
 ```python
 RETVAL=0
@@ -303,104 +305,104 @@ USER=splunkuser
 . /etc/init.d/functions
 ```
 
-🔹 Comandos Básicos para Gerenciar o Splunk
+🔹 Comandos básicos para administrar Splunk
 
-Verificar status
+Comprobar estado
 
 ```python
 /opt/splunk/bin/splunk status
 ```
 
-Iniciar o Splunk
+Iniciar Splunk
 
 ```python
 /opt/splunk/bin/splunk start
 ```
 
-Parar o Splunk
+Detener Splunk
 
 ```python
 /opt/splunk/bin/splunk stop
 ```
 
-Reiniciar o Splunk
+Reiniciar Splunk
 
 ```python
 /opt/splunk/bin/splunk restart
 ```
 
-Agora o Splunk está instalado e configurado no seu servidor Linux. Para acessá-lo via navegador, abra:
+Splunk ya está instalado y configurado en su servidor Linux. Para acceder a él mediante el navegador, abra:
 
 ```python
-http://<IP_DO_SERVIDOR>:8000
+http://<SERVER_IP>:8000
 ```
 
-# Integrar logs de Cisco ASA Firewall e Carbon Black EDR ao Splunk Enterprise Security (ES) 8, garantindo conformidade com o Common Information Model (CIM).
+# Integrar los registros de Cisco ASA Firewall y Carbon Black EDR en Splunk Enterprise Security (ES) 8, garantizando así la conformidad con el Modelo de Información Común (CIM).
 
-1. Criar os Indexes no Splunk
+1. Crear índices en Splunk
 
-O Splunk ES usa indexes específicos para cada tipo de dado. Vamos criar os indexes corretos:
+Splunk ES utiliza índices específicos para cada tipo de dato. Vamos a crear los índices correctos:
 
-Criar index para logs do Cisco ASA Firewall
+Crear índice para los registros del firewall de Cisco ASA
 
 ```python
 /opt/splunk/bin/splunk add index network -datatype event -maxTotalDataSizeMB 50000 -homePath.maxDataSizeMB 10000
 ```
 
-Usuário Admin
+Usuario administrador
 
-Criar index para logs do Carbon Black EDR
+Crear índice para los registros EDR de Carbon Black
 
 ```python
-/opt/splunk/bin/splunk  add index edr -datatype event -maxTotalDataSizeMB 50000 -homePath.maxDataSizeMB 10000
+/opt/splunk/bin/splunk add index edr -datatype event -maxTotalDataSizeMB 50000 -homePath.maxDataSizeMB 10000
 ```
 
-🔹 network → Para logs de firewall e segurança de rede.
-🔹 edr → Para logs de detecção e resposta de endpoint (EDR).
+🔹 network → Para los registros de seguridad de red y firewall.
+🔹 edr → Para los registros de detección y respuesta de endpoints (EDR).
 
-🚀 Reinicie o Splunk para aplicar as mudanças:
+🚀 Reinicia Splunk para aplicar los cambios:
 
 ```python
 splunk /opt/splunk/bin/splunk restart
 ```
 
-2. Criar as Stanzas de Entrada (inputs.conf)
+2. Crea las estrofas de entrada (inputs.conf)
 
-Agora vamos configurar o Splunk Add-on correspondente para que ele colete os logs.
+Ahora, configuremos el complemento de Splunk correspondiente para que recopile los registros.
 
-➡️ Cisco ASA Firewall
+➡️ Firewall Cisco ASA
 
-Verificando se existe pasta local no add on Cisco Asa:
+Comprobar si hay una carpeta local en el complemento Cisco ASA:
 
 ```python
 ls /opt/splunk/etc/apps/Splunk_TA_cisco-asa/
 ```
 
-Caso não tenha crie a pasta:
+Si no hay ninguna carpeta, créela:
 
 ```python
 mkdir /opt/splunk/etc/apps/Splunk_TA_cisco-asa/local
 ```
 
-Arquivo: /opt/splunk/etc/apps/Splunk_TA_cisco-asa/local/inputs.conf
+Archivo: /opt/splunk/etc/apps/Splunk_TA_cisco-asa/local/inputs.conf
 
 ```python
 vi /opt/splunk/etc/apps/Splunk_TA_cisco-asa/local/inputs.conf
 ```
 
-Use "i" para inserir
+Insertar con "i"
 
 ```python
 i
 ```
 
-Cole a stanza abaixo:
+Pegar la estrofa Abajo:
 
 ```python
 [monitor:///var/log/splunk_real_env/cisco_firewall.log]
-index = network
-sourcetype = cisco:asa
-disabled = false
+índice = red
+tipo de origen = cisco:asa
+deshabilitado = falso
 ```
 
 ```python
@@ -409,9 +411,9 @@ sudo -H -u splunkuser vi /opt/splunk/etc/apps/Splunk_TA_cisco-asa/local/inputs.c
 
 Carbon Black EDR
 
-Arquivo: /opt/splunk/etc/apps/Splunk_TA_carbonblack/local/inputs.conf
+Archivo: /opt/splunk/etc/apps/Splunk_TA_carbonblack/local/inputs.conf
 
-Caso não tenha crie a pasta:
+Si no tiene una, cree la carpeta:
 
 ```python
 vi /opt/splunk/etc/apps/Splunk_TA_carbonblack/local/inputs.conf
@@ -424,31 +426,31 @@ sourcetype = carbonblack:edr
 disabled = false
 ```
 
-Reinicie o Splunk para aplicar as mudanças:
+Reinicie Splunk para aplicar los cambios:
 
 ```python
 /opt/splunk/bin/splunk restart
 ```
 
-3. Criar Scripts para Gerar Eventos de Teste
+3. Crear scripts para generar eventos de prueba
 
-Criando pasta local:
+Crear una carpeta local:
 
 ```python
 sudo mkdir /var/log/splunk_real_env/
 ```
 
-Verificando pasta local:
+Comprobando la carpeta local:
 
 ```python
 ls -lha /var/log/
 ```
 
-Agora criamos dois scripts para simular eventos reais.
+Ahora creamos dos scripts para simular eventos reales.
 
-Script para Gerar Logs de Cisco ASA
+Script para generar registros de Cisco ASA
 
-Arquivo: /var/log/splunk_real_env/generate_cisco_asa_logs.py
+Archivo: /var/log/splunk_real_env/generate_cisco_asa_logs.py
 
 ```python
 sudo vi /var/log/splunk_real_env/generate_cisco_asa_logs.py
@@ -462,45 +464,41 @@ from datetime import datetime
 log_path = "/var/log/splunk_real_env/cisco_firewall.log"
 
 sample_logs = [
-    f"{datetime.now(): %b %d %X} hostname %ASA-6-106100: access-list inside_access_in permitted tcp inside/192.168.1.10(12345) -> outside/8.8.8.8(443) hit-cnt 1 first hit",
-    f"{datetime.now(): %b %d %X} hostname %ASA-6-302015: Built outbound UDP connection 1234 for outside:8.8.8.8/53 to inside:192.168.1.20/54231",
+f"{datetime.now(): %b %d %X} hostname %ASA-6-106100: access-list inside_access_in allowed tcp inside/192.168.1.10(12345) -> outside/8.8.8.8(443) hit-cnt 1 first hit",
+f"{datetime.now(): %b %d %X} hostname %ASA-6-302015: Se creó una conexión UDP saliente 1234 para la dirección externa: 8.8.8.8/53 a la dirección interna: 192.168.1.20/54231",
 ]
+whileTrue:
 
-while True:
-    with open(log_path, "a") as log_file:
-        log_file.write(random.choice(sample_logs) + "\n")
-    time.sleep(3)  # Envia logs a cada 3 segundos
+with open(log_path, "a") as log_file:
+log_file.write(random.choice(sample_logs) + "\n")
+time.sleep(3) # Envía registros cada 3 segundos
 ```
 
-🔹 Gera eventos aleatórios de firewall e escreve no arquivo de logs.
+🔹 Genera eventos aleatorios del firewall y los escribe en el archivo de registro.
 
+➡️ Script para generar registros EDR de Carbon Black
 
-
-➡️ Script para Gerar Logs de Carbon Black EDR
-
-Arquivo: /var/log/splunk_real_env/generate_carbon_black_edr_logs.py
+Archivo: /var/log/splunk_real_env/generate_carbon_black_edr_logs.py
 
 ```python
 import time
 import random
 
-
 log_path = "/var/log/splunk_real_env/carbon_black_edr.log"
 
 sample_logs = [
-    'Timestamp: 2025-03-12 12:10:26, Sensor ID: 12345, Event Type: Process Creation, Process Name: "cmd.exe", Process Path: "C:\\Windows\\System32\\cmd.exe", Arguments: "/c powershell.exe -noprofile -executionpolicy bypass"',
-    'Timestamp: 2025-03-12 12:15:10, Sensor ID: 54321, Event Type: File Modification, File Name: "malicious.exe", File Path: "C:\\Users\\Public\\Downloads\\malware.exe"',
+'Marca de tiempo: 2025-03-12 12:10:26, ID del sensor: 12345, Tipo de evento: Creación del proceso, Nombre del proceso: "cmd.exe", Ruta del proceso: "C:\\Windows\\System32\\cmd.exe", Argumentos: "/c powershell.exe -noprofile -executionpolicy bypass"',
+'Marca de tiempo: 2025-03-12 12:15:10, ID del sensor: 54321, Evento Tipo: Modificación de archivo, Nombre del archivo: "malicious.exe", Ruta del archivo: "C:\\Usuarios\\Público\\Descargas\\malware.exe"',
 ]
-
-while True:
-    with open(log_path, "a") as log_file:
-        log_file.write(random.choice(sample_logs) + "\n")
-    time.sleep(30)  # Envia logs a cada 30 segundos
+whileTrue:
+with open(log_path, "a") as log_file:
+log_file.write(random.choice(sample_logs) + "\n")
+time.sleep(30) # Enviar registros cada 30 segundos
 ```
 
-🔹 Simula processos suspeitos detectados pelo Carbon Black EDR.
+🔹 Simula procesos sospechosos detectados por Carbon Black EDR.
 
-🚀 Tornar os scripts executáveis e rodá-los em segundo plano:
+🚀 Haga que los scripts sean ejecutables y ejecútelos en segundo plano:
 
 ```python
 sudo chmod +x /var/log/splunk_real_env/generate_cisco_asa_logs.py
@@ -510,19 +508,19 @@ sudo chmod +x /var/log/splunk_real_env/generate_cisco_asa_logs.py
 sudo nohup python3 /var/log/splunk_real_env/generate_cisco_asa_logs.py > /dev/null 2>&1 &
 ```
 
-Veja se o processo está ativo:
+Comprobar si el proceso está activo:
 
 ```python
 ps aux | grep generate_cisco_asa_logs.py
 ```
 
-Se aparecer algo como:
+Si ve algo como:
 
 ```python
-username  35943  0.0  0.1  12345  6789 pts/0    S    14:30   0:00 python3 /var/log/splunk_real_env/generate_cisco_asa_logs.py
+username 35943 0.0 0.1 12345 6789 pts/0 S 14:30 0:00 python3 /var/log/splunk_real_env/generate_cisco_asa_logs.py
 ```
 
-Isso significa que o script está rodando.
+Esto significa que el script se está ejecutando.
 
 ```python
 sudo chmod +x /var/log/splunk_real_env/generate_carbon_black_edr_logs.py
@@ -532,135 +530,132 @@ sudo chmod +x /var/log/splunk_real_env/generate_carbon_black_edr_logs.py
 sudo nohup python3 /var/log/splunk_real_env/generate_carbon_black_edr_logs.py > /dev/null 2>&1 &
 ```
 
-4. Mapear os Indexes no ES (macros.conf)
+4. Asignar índices en ES (macros.conf)
 
-Agora precisamos configurar o Splunk Enterprise Security (ES) para reconhecer os logs no CIM (Common Information Model).
+Ahora necesitamos configurar Splunk Enterprise Security (ES) para que reconozca los registros en el CIM (Modelo de Información Común).
 
-Arquivo: /opt/splunk/etc/apps/SplunkEnterpriseSecuritySuite/local/macros.conf
+Archivo: /opt/splunk/etc/apps/SplunkEnterpriseSecuritySuite/local/macros.conf
 
-Cisco ASA (Network_Traffic)
+Cisco ASA (Tráfico de red)
 
 ```python
-[Network_Traffic_Indexes]
-definition = (index=network OR index=main)
+[Índices de tráfico de red]
+definición = (índice=red O índice=principal)
 iseval = 0
 ```
 
-Carbon Black EDR (Endpoint)
+EDR de carbono negro (Punto final)
 
 ```python
-[Endpoint_Indexes]
-definition = (index=edr OR index=main)
+[Índices de punto final]
+definición = (índice=edr O índice=principal)
 iseval = 0
 ```
 
-Após editar, aplique as mudanças:
+Después de editar, aplique los cambios:
 
 ```python
 splunk /opt/splunk/bin/splunk restart
 ```
 
-5. Testar os Logs no Splunk
+5. Pruebe los registros en Splunk
 
-Agora vamos testar se os eventos estão aparecendo corretamente nos Dashboards do ES.
+Ahora, probemos si los eventos se muestran correctamente en los paneles de ES.
 
-Teste para Cisco ASA
+Prueba para Cisco ASA
 
 ```python
 | tstats count FROM datamodel=Network_Traffic.All_Traffic WHERE index=network BY _time, All_Traffic.src, All_Traffic.dest
 ```
 
-Teste para Carbon Black EDR
+Prueba de Carbon Black EDR
 
 ```python
 | tstats count FROM datamodel=Endpoint.Processes WHERE index=edr BY _time, Processes.process_name
 ```
 
-Se os eventos aparecerem, significa que os logs estão sendo normalizados corretamente no ES. 🚀
+Si aparecen los eventos, significa que los registros se están normalizando correctamente en ES. 🚀
 
-Resumo Final
+Resumen final
 
+* ✅ Creamos los índices (network y edr) para garantizar que los registros se almacenen correctamente.
+* ✅ Configuramos las entradas (inputs.conf) para monitorizar los archivos de registro.
+* ✅ Creamos scripts de Python para generar eventos reales desde Cisco ASA y Carbon Black EDR. * ✅ Hemos añadido los índices a las macros de búsqueda (macros.conf) para que Splunk ES los reconozca.
+* ✅ Hemos probado los registros en Splunk ES y confirmado que los paneles funcionan correctamente.
 
+# Transferencia de Splunk ES 8 a Splunk mediante SCP
 
-* ✅ Criamos os indexes (network e edr) para garantir que os logs sejam armazenados corretamente.
-* ✅ Configuramos as entradas (inputs.conf) para monitorar os arquivos de log.
-* ✅ Criamos scripts Python para gerar eventos reais de Cisco ASA e Carbon Black EDR.
-* ✅ Adicionamos os indexes nas Search Macros (macros.conf) para que o Splunk ES os reconheça.
-* ✅ Testamos os logs no Splunk ES e confirmamos que os dashboards estão funcionando corretamente.
-
-# Transferindo o Splunk ES 8 para o splunk via SCP
-
-Acesse o diretorio onde você fez o donwload do arquivo. Por exemplo:
+Acceda al directorio donde descargó el archivo. Por ejemplo:
 
 ```python
 cd /Users/Levi/Downloads/splunk-enterprise-security_802.spl
 ```
 
-Abra o terminal e faça a transferência:
+Abra la terminal y realice la transferencia:
 
 ```python
-scp splunk-enterprise-security_802.spl splunkuser@SEU_IP:/home/splunkuser
+scp splunk-enterprise-security_802.spl splunkuser@YOUR_IP:/home/splunkuser
 ```
 
-Confira se o arquivo chegou corretamente:
+Compruebe si el archivo llegó correctamente:
 
 ```python
 ls -lha /home/splunkuser/splunk-enterprise-security_802.spl
 ```
 
-Adicione permissão de execução no arquivo:
+Agregue el permiso de ejecución al archivo:
 
 ```python
 sudo chmod +x /home/splunkuser/splunk-enterprise-security_802.spl
 ```
 
-Confirme que existe agora permissão de execução "x":
+Confirme que ahora existe el permiso de ejecución "x":
 
 ```python
 ls -lha /home/splunkuser/splunk-enterprise-security_802.spl
 ```
 
-# Instalando o ES 8
+# Instalación de ES 8
 
-Acesse o diretorio com o arquivo spl:
+Acceda al directorio con el archivo spl:
 
 ```python
 cd /home/splunkuser/
 ```
 
-Comando para instalar o Enterprise Security 8:
+Comando para instalar Enterprise Security 8:
 
 ```python
 sudo /opt/splunk/bin/splunk install app /home/splunkuser/splunk-enterprise-security_802.spl -auth admin:splunkuser
 ```
 
-🕒 Aumentar o Timeout do Splunk Web
+🕒 Aumente el tiempo de espera web de Splunk
 
-Verifique se existe a pasta local:
+Compruebe si la carpeta local existe:
 
 ```python
 ls /opt/splunk/etc/system/
 ```
 
-Caso a pasta não exista crie:
+Si la carpeta no existe, créela:
 
 ```python
 sudo mkdir /opt/splunk/etc/system/local
 ```
 
-Reforce as permissões para nosso usuário:
+Apriete los Permisos para nuestro usuario:
 
 ```python
 sudo chown -R splunkuser:splunkuser /opt/splunk
 ```
 
-Edite oe / ou arquivo web.conf:
+Edite el archivo web.conf:
 
 ```python
 sudo vi /opt/splunk/etc/system/local/web.conf
 ```
 
-Adicione (ou edite) a seção abaixo para aumentar o tempo limite:
+Agregue (o edite) la siguiente sección para aumentar el tiempo de espera:
 
 ```python
 [settings]
@@ -668,35 +663,36 @@ startwebserver = true
 splunkdConnectionTimeout = 300
 ```
 
-Isso aumentará o tempo limite para 300 segundos (5 minutos).
+Esto aumentará el tiempo de espera a 300 segundos (5 minutos).
 
-Salve e saia do editor (ESC → :wq → Enter).
+Guarde y salga del editor (ESC → :wq → Enter).
 
-⚙️ Ajustar Timeout no splunk-launch.conf
 
-Edite o arquivo:
+⚙️ Ajustar el tiempo de espera en splunk-launch.conf
+
+Editar el archivo:
 
 ```python
 sudo vi /opt/splunk/etc/splunk-launch.conf
 ```
 
-Adicione a linha abaixo no final do arquivo:
+Añadir la siguiente línea al final del archivo:
 
 ```python
 SPLUNKD_CONNECTION_TIMEOUT=300
 ```
 
-Salve e saia (ESC → :wq → Enter).
+Guardar y salir (ESC → :wq → Intro).
 
-Reinicie o Splunk:
+Reiniciar Splunk:
 
 ```python
 sudo /opt/splunk/bin/splunk restart
 ```
 
-# Simulando um SQL Inject
+# Simulación de una inyección SQL
 
-Script Python para simular SQL Injection:
+Script de Python para simular una inyección SQL:
 
 ```python
 sudo vi /var/log/splunk_real_env/sql_injection_simulation.py
@@ -708,51 +704,50 @@ import random
 import logging
 from datetime import datetime
 
-# Configuração do logger para gravar em um arquivo de log
-log_file = '/var/log/splunk_real_env/cisco_ips.log'  # Defina o caminho para o arquivo de log
+# Configurar el registrador para escribir en un archivo de registro
+log_file = '/var/log/splunk_real_env/cisco_ips.log' # Establecer la ruta del archivo de registro
 logging.basicConfig(filename=log_file, level=logging.INFO,
-                    format='%(asctime)s [%(levelname)s] [%(message)s]')
+format='%(asctime)s [%(levelname)s] [%(message)s]')
 
-# Função para gerar SQL Injection (simulado)
+# Función para generar una inyección SQL (simulada)
 def generate_sql_injection():
-    # SQL Injection simples simulando um ataque
-    injection_attempts = [
-        "OR 1=1 --",
-        "' OR 'a'='a",
-        "' UNION SELECT NULL, username, password FROM users --",
-        "'; DROP TABLE users --",
-        "' OR 'x'='x",
-        "admin' --",
-        "' OR 1=1#",
-        "admin' OR '1'='1' --",
-        "' OR '' = '",
-        "'; EXEC xp_cmdshell('dir') --"
-    ]
+# Simulación de un ataque simple de inyección SQL
+injection_attempts = [
+"OR 1=1 --",
+"' OR 'a'='a",
+"' UNION SELECT NULL, username, password FROM users --",
+"'; DROP TABLE users --",
+"' OR 'x'='x",
+"admin' --",
+"' OR 1=1#",
+"admin' OR '1'='1' --",
+"' OR '' = '",
+"'; EXEC xp_cmdshell('dir') --"
+]
+# Seleccionar un intento aleatorio de inyección SQL
+return random.choice(injection_attempts)
 
-    # Escolha uma tentativa aleatória de injeção SQL
-    return random.choice(injection_attempts)
-
-# Função para gerar um log de SQL Injection simulado
+# Función para generar un registro simulado de inyección SQL
 def log_sql_injection():
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    source_ip = "192.168.1." + str(random.randint(1, 255))  # IP de origem aleatório
-    destination_ip = "10.0.0." + str(random.randint(1, 255))  # IP de destino aleatório
-    sql_injection = generate_sql_injection()
+timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+source_ip = "192.168.1." + str(random.randint(1, 255)) # IP de origen aleatoria
+destination_ip = "10.0.0." + str(random.randint(1, 255)) # IP de destino aleatoria
+sql_injection = generate_sql_injection()
 
-    # Log formatado
-    log_message = f"[INFO] {timestamp} src_ip={source_ip} dest_ip={destination_ip} sql_injection={sql_injection} eventtype=cisco-security-events"
+# Registro formateado
+log_message = f"[INFO] {timestamp} src_ip={source_ip} dest_ip={destination_ip} sql_injection={sql_injection} eventtype=cisco-security-events"
 
-    # Grava no arquivo de log
-    logging.info(log_message)
-    print(log_message)
+# Escribir en el archivo de registro
+logging.info(log_message)
+print(log_message)
 
-# Loop para gerar uma tentativa de SQL Injection a cada 30 segundos
+# Bucle para generar un intento de inyección SQL cada 30 segundos
 try:
-    while True:
-        log_sql_injection()
-        time.sleep(30)  # Espera 30 segundos antes da próxima tentativa
+while True:
+log_sql_injection()
+time.sleep(30) # Esperar 30 segundos antes del siguiente intento
 except KeyboardInterrupt:
-    print("Script interrompido pelo usuário.")
+print("Script interrumpido por el usuario.")
 ```
 
 ```python
@@ -763,88 +758,88 @@ sudo chmod +x sql_injection_simulation.py
 ls -lha
 ```
 
-Configurando o CIM compliance search macro:
+Configuración de la macro de búsqueda de conformidad con CIM:
 
 ```python
 vi /opt/splunk/etc/apps/SplunkEnterpriseSecuritySuite/local/macros.conf
 ```
 
 ```python
-[Network_Traffic_Indexes]
-definition = (index=network OR index=main)
+[Índices de tráfico de red]
+definición = (índice=red O índice=principal)
 iseval = 0
 ```
 
 ```python
 [monitor:///var/log/splunk_real_env/cisco_ips.log]
-disabled = false
-sourcetype = cisco:firewall
-index = network
+deshabilitado = falso
+tipo de origen = cisco:firewall
+índice = red
 ```
 
-Rodar em background:
+Ejecutar en segundo plano:
 
 ```python
 nohup python3 /var/log/splunk_real_env/sql_injection_simulation.py > /dev/null 2>&1 &
 ```
 
-Depois de rodar o script com nohup, você pode verificar se o script está sendo executado em segundo plano com o comando:
+Después de ejecutar el script con nohup, puede comprobar si se ejecuta en segundo plano con el comando:
 
 ```python
 ps aux | grep sql_injection_simulation.py
 ```
 
-# Troubleshooting
+# Solución de problemas
 
-Verificar o processo exato:
+Verifique el proceso exacto:
 
 ```python
 pgrep -fl sql_injection_simulation.py
 ```
 
-Se não houver saída, o script não está rodando.
+Si no hay salida, el script no se está ejecutando.
 
 ```python
-Caso o script tenha parado e você queira rodá-lo novamente:
+Si el script se detuvo y desea ejecutarlo de nuevo:
 ```
 
 ```python
 sudo nohup python3 /var/log/splunk_real_env/sql_injection_simulation.py > /dev/null 2>&1 &
 ```
 
-Para confirmar que ele está rodando, use:
+Para confirmar que se está ejecutando, utilice:
 
 ```python
 sudo pgrep -fl sql_injection_simulation.py
 ```
 
-# Lista Monitor
+# Lista de monitores
 
 ```python
 /opt/splunk/bin/splunk list monitor
 ```
 
-# 🛠 1️⃣ Verifique permissões da pasta
+# 🛠 1️⃣ Comprobar los permisos de la carpeta
 
-O Splunk pode não ter permissão para escrever na pasta /var/log/splunk_real_env. Verifique com:
+Es posible que Splunk no tenga permiso para escribir en la carpeta /var/log/splunk_real_env. Verificar con:
 
 ```python
 ls -ld /var/log/splunk_real_env
 ```
 
-Se a saída for algo como:
+Si el resultado es similar a:
 
 ```python
 drwxr-xr-x 2 root root 4096 Mar 13 13:10 /var/log/splunk_real_env
 ```
 
-Isso significa que somente o root pode escrever. Para corrigir, execute:
+Esto significa que solo el usuario root puede escribir. Para solucionarlo, ejecute:
 
 ```python
 sudo chmod 777 /var/log/splunk_real_env
 ```
 
-Isso dará permissão total (teste isso, depois podemos ajustar as permissões corretamente).
+Esto le otorgará permisos completos (pruébelo y luego podremos ajustar los permisos según corresponda).
 
 Recursivo:
 
@@ -852,42 +847,39 @@ Recursivo:
 sudo chmod -R 777 /var/log/splunk_real_env
 ```
 
-Rodar o script novamente:
+Ejecute el script de nuevo:
 
 ```python
 nohup python3 /var/log/splunk_real_env/sql_injection_simulation.py > /dev/null 2>&1 &
 ```
 
-Verificar se foi criado:
+Comprobar si se creó:
 
 ```python
 ls -l /var/log/splunk_real_env/cisco_ips.log
 ```
 
-📁 2️⃣ Veja se o arquivo está sendo criado
+📁 2️⃣ Comprobar si se está creando el archivo
 
 ```python
 ls -l /var/log/splunk_real_env/cisco_ips.log
 ```
 
-Verificar se o script sql esta rodando:
+Comprobar si el script SQL se está ejecutando:
 
 ```python
 pgrep -fl sql_injection_simulation.py
 ```
 
-Verificar se o script firewall esta rodando:
+Verifique si el script del firewall se está ejecutando:
 
 ```python
 pgrep -fl generate_cisco_asa_logs.py
 ```
 
-Rodar os dois scripts novamente:
+Ejecute ambos scripts de nuevo:
 
 ```python
 sudo nohup python3 /var/log/splunk_real_env/generate_cisco_asa_logs.py > /dev/null 2>&1 &
 sudo nohup python3 /var/log/splunk_real_env/sql_injection_simulation.py > /dev/null 2>&1 &
 ```
-
-# Como ativar uma regra de correlação?
-
