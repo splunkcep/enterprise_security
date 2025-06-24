@@ -22,7 +22,7 @@ sudo iptables -I INPUT -p tcp --dport 8088 -j ACCEPT
 sudo iptables -I INPUT -p tcp --dport 9997 -j ACCEPT
 ```
 
-Integración de registros de Cisco ASA y Carbon Black EDR en Splunk ES 8
+Integración de logs de Cisco ASA y Carbon Black EDR en Splunk ES 8
 
 2. Guardar reglas para la persistencia tras el reinicio
 
@@ -52,9 +52,9 @@ sudo iptables -L -n
 
 Esto mostrará todas las reglas configuradas en iptables, incluidos los puertos recién añadidos.
 
-Desactivación de las Páginas Grandes Transparentes (THP) antes de instalar la versión de prueba de Splunk Enterprise
+# Desactivación Transparent Huge Pages (THP) antes de instalar la versión de prueba de Splunk Enterprise
 
-Las Páginas Grandes Transparentes (THP) pueden afectar negativamente el rendimiento de Splunk. Por lo tanto, Splunk recomienda desactivar esta opción antes de la instalación.
+Las Transparent Huge Pages (THP) pueden afectar negativamente el rendimiento de Splunk. Por lo tanto, Splunk recomienda desactivar esta opción antes de la instalación.
 
 
 Comprobar el estado actual de THP
@@ -115,7 +115,8 @@ El resultado debería mostrar "[never]", lo que indica que THP se ha deshabilita
 🔗 Documentación oficial
 
 Para más información, consulta la documentación oficial de Splunk:
-🔗 Splunk y THP - Páginas enormes transparentes
+🔗 Splunk y THP - Transparent Huge Pages
+
 
 # 📌 Paso a paso: Instalación de la versión de prueba de Splunk Enterprise en Linux
 
